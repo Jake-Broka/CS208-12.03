@@ -19,19 +19,23 @@ router.get('/', function(req, res, next){
 
 router.post('/create', function (req, res, next) {
     const { task } = req.body;
-    try {
-      req.db.query('INSERT INTO todos (task) VALUES (?);', [task], (err, results) => {
-        if (err) {
-          console.error('Error adding todo:', err);
-          return res.status(500).send('Error adding todo');
-        }
-        console.log('Todo added successfully:', results);
-        // Redirect to the home page after adding
-        res.redirect('/');
-      });
-    } catch (error) {
-      console.error('Error adding todo:', error);
-      res.status(500).send('Error adding todo');
+    if(task.trim()){
+      try {
+        req.db.query('INSERT INTO todos (task) VALUES (?);', [task], (err, results) => {
+          if (err) {
+            console.error('Error adding todo:', err);
+            return res.status(500).send('Error adding todo');
+          }
+          console.log('Todo added successfully:', results);
+          // Redirect to the home page after adding
+          res.redirect('/');
+        });
+      } catch (error) {
+        console.error('Error adding todo:', error);
+        res.status(500).send('Error adding todo');
+      }
+    } else {
+      console.log('Blank todo input!');
     }
 });
 
@@ -51,6 +55,44 @@ router.post('/delete', function (req, res, next) {
         console.error('Error deleting todo:', error);
         res.status(500).send('Error deleting todo:');
     }
+});
+
+router.post('/complete', function(req, res, next){
+  const { id } = req.body;
+  try{
+    req.db.query('UPDATE todos SET completed = CASE WHEN completed = 0 THEN 1 WHEN completed = 1 THEN 0 END WHERE id = ?', [id], function(err, results){
+      if(err){
+        console.error('Error setting complete:',err);
+        return res.status(500).send('Error setting complete');
+      }
+      console.log('Set complete successfully:', results);
+      res.redirect('/');
+    });
+  } catch(error){
+      console.error('Error setting complete:', error);
+      res.status(500).send('Error setting complete:');
+  }
+});
+
+router.post('/edit', function (req, res, next){
+  const { editText, id } = req.body
+  if(editText.trim()){
+    try{
+      req.db.query('UPDATE todos SET task = ? WHERE id = ?', [editText, id], function(err, results){
+        if(err){
+          console.error('Error editing task:',err);
+          return res.status(500).send('Error editing task');
+        }
+        console.log('Edited task successfully:', results);
+        res.redirect('/');
+      });
+    } catch(error){
+        console.error('Error editing task:', error);
+        res.status(500).send('Error editing task:');
+    }
+  } else {
+    console.log('Blank edit input!');
+  }
 });
 
 module.exports = router;

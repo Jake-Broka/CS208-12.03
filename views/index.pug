@@ -8,13 +8,25 @@ block content
     li
       span= val.task + ' - '
       if val.completed > 0
-        span Completed
+        span Completed &#10004;
       else
-        span Not Completed
-      form(method='POST' action='/delete')
-        input(type='hidden', name='id', value=val.id)
-        button(type='submit') Delete
+        span Not Completed &#10006;
 
+      div.buttons
+        form(method='POST' action='/edit')
+          input(type='text', name='editText', placeholder='Edit task...') 
+          input(type='hidden', name='id', value=val.id)
+          button(type='submit') Edit
+
+        form(method='POST' action='/complete')
+          input(type='hidden', name='id', value=val.id)
+          button(type='submit')= val.completed > 0 ? 'Mark Incomplete' : 'Mark Complete'
+        
+        form(method='POST' action='/delete')
+          input(type='hidden', name='id', value=val.id)
+          button(type='submit') Delete
+
+  br
   hr
   h2 Add a new task
   form(method='POST' action='/create')
