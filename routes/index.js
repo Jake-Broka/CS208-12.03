@@ -19,6 +19,7 @@ router.get('/', function(req, res, next){
 
 router.post('/create', function (req, res, next) {
     const { task } = req.body;
+    //Checks for blank input
     if(task.trim()){
       try {
         req.db.query('INSERT INTO todos (task) VALUES (?);', [task], (err, results) => {
@@ -57,6 +58,9 @@ router.post('/delete', function (req, res, next) {
     }
 });
 
+/*
+  Checks the for the completeness status of a todo, and adjusts the status accordingly upon user input
+*/
 router.post('/complete', function(req, res, next){
   const { id } = req.body;
   try{
@@ -74,8 +78,12 @@ router.post('/complete', function(req, res, next){
   }
 });
 
+/*
+  Allows the user to edit the task based off the text entered through the form submission.
+*/
 router.post('/edit', function (req, res, next){
   const { editText, id } = req.body
+  //Checks for blank input
   if(editText.trim()){
     try{
       req.db.query('UPDATE todos SET task = ? WHERE id = ?', [editText, id], function(err, results){

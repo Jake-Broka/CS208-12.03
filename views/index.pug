@@ -12,14 +12,18 @@ block content
       else
         span Not Completed &#10006;
 
+      //-.buttons class allows for easy spacing and editing of all submission buttons
       div.buttons
+        //-Adds a text space and submission button for editing of todos
         form(method='POST' action='/edit')
           input(type='text', name='editText', placeholder='Edit task...') 
           input(type='hidden', name='id', value=val.id)
           button(type='submit') Edit
 
+        //-Adds a button to mark a todo complete or incomplete
         form(method='POST' action='/complete')
           input(type='hidden', name='id', value=val.id)
+          //-Ternary operator to see which value to display on submit button based on value inside todos table
           button(type='submit')= val.completed > 0 ? 'Mark Incomplete' : 'Mark Complete'
         
         form(method='POST' action='/delete')
